@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101317">
+<title>Roulette 50 — Analytics</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0e12;--panel:#151a21;--panel2:#1b222c;--line:#2a3441;--muted:#9aa6b5;--text:#f2f5f8;--gold:#f2c66d;--green:#13834d;--red:#c83243;--black:#252b34;--blue:#5ca8ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#18212b 0,#0b0e12 55%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{width:min(100%,980px);margin:auto;padding:18px 14px 42px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.brand{font-size:20px;font-weight:850;letter-spacing:.04em}.brand span{color:var(--gold)}.sub{color:var(--muted);font-size:12px}
+.card{background:linear-gradient(145deg,#171e27,#12171e);border:1px solid var(--line);border-radius:17px;padding:16px;margin:12px 0;box-shadow:0 12px 30px #0003}.hero{border-color:#6d5730;background:linear-gradient(135deg,#282317,#171b20 70%)}.eyebrow{color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.14em}.hero h1{font-size:20px;margin:4px 0 3px}.hint{font-size:12px;color:var(--muted);margin:0 0 12px}
+.picks{display:flex;flex-wrap:wrap;gap:9px}.ball{width:43px;height:43px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:850;font-size:17px;border:2px solid #ffffff22;box-shadow:inset 0 1px 2px #fff2,0 3px 8px #0005}.ball.green{background:var(--green)}.ball.red{background:var(--red)}.ball.black{background:var(--black)}.ball.center{outline:3px solid var(--gold);outline-offset:3px}.ball.small{width:34px;height:34px;font-size:14px}.ball.tiny{width:29px;height:29px;font-size:12px}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px;font-size:16px}.tag{font-size:10px;color:var(--muted);border:1px solid var(--line);padding:3px 7px;border-radius:99px;white-space:nowrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#0d1218;border:1px solid var(--line);padding:11px;border-radius:12px}.metric b{display:block;font-size:20px}.metric small{color:var(--muted)}
+input,textarea,button{font:inherit}input[type=number],textarea{width:100%;background:#0b1016;color:var(--text);border:1px solid #354253;border-radius:11px;padding:13px;outline:none}input:focus,textarea:focus{border-color:var(--gold)}textarea{min-height:86px;resize:vertical}
+button{border:0;border-radius:11px;padding:11px 14px;font-weight:750;color:#111820;background:var(--gold);cursor:pointer}button.secondary{background:#27313d;color:var(--text);border:1px solid #3a4655}button.danger{background:#55232a;color:#ffdce0;border:1px solid #8d3542}button:disabled{opacity:.4;cursor:not-allowed}
+.entry{display:grid;grid-template-columns:1fr auto;gap:9px}.entry input{font-size:22px;font-weight:800;text-align:center}.pad{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}.pad button{padding:10px 0;border:1px solid #ffffff1c;color:#fff;border-radius:9px;font-size:15px}.pad .green{background:var(--green)}.pad .red{background:var(--red)}.pad .black{background:var(--black)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:1}
+label{font-size:12px;color:var(--muted)}.toggleline{display:flex;align-items:center;gap:8px;margin:9px 0}.toggleline input{accent-color:var(--gold)}
+.table{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.rank{background:#0d1218;border:1px solid var(--line);border-radius:11px;padding:9px 6px;text-align:center;min-width:0}.rank .ball{margin:0 auto 7px}.rank strong{display:block;font-size:13px}.rank small{display:block;color:var(--muted);font-size:10px;line-height:1.35}
+.wheelrow{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}.wheelitem{text-align:center}.wheelitem small{display:block;color:var(--muted);font-size:10px;margin-top:6px}.center-label{color:var(--gold);font-size:10px;font-weight:800}
+.memory{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.slot{background:#0d1218;border:1px solid var(--line);border-radius:9px;padding:7px 4px;text-align:center;min-height:65px}.slot .ball{margin:3px auto 0}.slot .num{font-weight:850;font-size:17px}.slot .slotlabel{font-size:9px;color:var(--muted);white-space:nowrap}.slot.latest{border-color:var(--gold)}.slot.drop{border-color:#b64b55}
+details summary{cursor:pointer;font-weight:750;color:#dbe3ed}details[open] summary{margin-bottom:12px}
+.note{font-size:11px;color:var(--muted);line-height:1.5}.status{min-height:18px;color:var(--gold);font-size:12px;margin-top:7px}.empty{color:var(--muted);font-size:13px;padding:12px 0}.footer{text-align:center;color:#718092;font-size:11px;padding:12px}
+@media(min-width:650px){main{padding:25px 22px 50px}.memory{grid-template-columns:repeat(10,1fr)}.pad{grid-template-columns:repeat(10,1fr)}.ball{width:48px;height:48px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top"><div><div class="brand">ROULETTE <span>50</span></div><div class="sub">EUROPEAN WHEEL · LIVE ROLLING ANALYTICS</div></div><div class="tag">0–36 · SINGLE ZERO</div></header>
+
+  <section class="card hero">
+    <div class="eyebrow">COMBINED SIGNAL</div><h1>MASTER TOP 5 NUMBERS</h1>
+    <p class="hint">Overlap first, then alternating picks from the two ranked lists.</p>
+    <div class="picks" id="masterPicks"><span class="empty">Add spin history to calculate picks.</span></div>
+    <p class="note" id="masterNote">No spins loaded yet.</p>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><div class="section-title">Hot Momentum <span class="tag">FORMULA 1</span></div><div class="note">S(x) = C₅₀ + 0.5 × C₁₀</div><div id="hotList" class="table" style="margin-top:12px"><div class="empty">Awaiting history.</div></div></section>
+    <section class="card"><div class="section-title">Wheel Sector <span class="tag">FORMULA 2</span></div><div class="note">Best contiguous 5-pocket sector on the European wheel.</div><div id="sectorScore" style="font-size:22px;font-weight:850;margin:10px 0 12px">—</div><div id="sectorList" class="wheelrow"><span class="empty">Awaiting history.</span></div></section>
+  </div>
+
+  <section class="card">
+    <div class="section-title">Quick Spin Entry <span class="tag" id="countTag">0 / 50 STORED</span></div>
+    <div class="entry"><input id="spinInput" type="number" min="0" max="36" step="1" inputmode="numeric" placeholder="0–36" aria-label="Enter roulette number"><button id="addSpin">ADD SPIN</button></div>
+    <div class="pad" id="numberPad" aria-label="European roulette number pad"></div>
+    <div class="actions"><button class="secondary" id="undoBtn" disabled>↶ Undo Last Spin</button><button class="danger" id="resetBtn">Reset / Edit All 50</button></div>
+    <div class="status" id="status" role="status"></div>
+  </section>
+
+  <section class="card">
+    <div class="section-title">Live 50-Slot Memory <span class="tag">NEWEST → OLDEST</span></div>
+    <p class="hint">Slot #1 is the latest spin. Slot #50 is the next number to drop when memory is full.</p>
+    <div id="memoryGrid" class="memory"></div>
+  </section>
+
+  <section class="card">
+    <details id="bulkDetails">
+      <summary>Initial Bulk Load / Edit History</summary>
+      <p class="hint">Paste up to 50 valid numbers, separated by commas, spaces, or line breaks. Invalid values block loading.</p>
+      <textarea id="bulkInput" placeholder="Example: 12, 0, 33, 7, 21"></textarea>
+      <div class="toggleline"><input type="checkbox" id="oldestFirst" checked><label for="oldestFirst">Pasted list starts with OLDEST number (recommended for chronological history)</label></div>
+      <div class="actions"><button id="loadBulk">Load History</button><button class="secondary" id="copyHistory">Copy Current History</button></div>
+      <div class="status" id="bulkStatus"></div>
+    </details>
+  </section>
+  <p class="footer">Analytics are descriptive only. Roulette spins are independent random events; past results do not improve the odds of future outcomes.</p>
+</main>
+<script>
+(() => {
+  "use strict";
+  const KEY = "roulette50_analytics_v1";
+  const W = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const RED = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+  let spins = []; // newest first
+  let undoStack = [];
+
+  const $ = id => document.getElementById(id);
+  const color = n => n === 0 ? "green" : RED.has(n) ? "red" : "black";
+  const ball = (n, size="") => `<span class="ball ${color(n)} ${size}">${n}</span>`;
+  const valid = n => Number.isInteger(n) && n >= 0 && n <= 36;
+  const save = () => {
+    try { localStorage.setItem(KEY, JSON.stringify({spins, undoStack})); }
+    catch(e) { setStatus("Could not save in this browser. Check storage availability."); }
+  };
+  const setStatus = msg => $("status").textContent = msg;
+  const setBulkStatus = msg => $("bulkStatus").textContent = msg;
+  function loadSaved() {
+    try {
+      const data = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (data && Array.isArray(data.spins) && data.spins.every(valid)) {
+        spins = data.spins.slice(0,50);
+        undoStack = Array.isArray(data.undoStack) ? data.undoStack : [];
+      }
+    } catch(e) { spins = []; undoStack = []; }
+  }
+  function addSpin(n) {
+    if (!valid(n)) { setStatus("Enter a whole number from 0 to 36."); return; }
+    undoStack.push(spins.slice());
+    if (undoStack.length > 100) undoStack.shift();
+    spins = [n, ...spins].slice(0,50);
+    save(); render();
+    $("spinInput").value = "";
+    setStatus(`Added ${n}. Latest spin is now Slot #1.`);
+  }
+  function undo() {
+    if (!undoStack.length) return;
+    spins = undoStack.pop();
+    save(); render(); setStatus("Last spin undone; previous Slot #50 restored if one was dropped.");
+  }
+  function reset() {
+    if (!confirm("Reset all stored spins and undo history? You can then load or enter a new history.")) return;
+    spins = []; undoStack = []; save(); render(); $("bulkInput").value = "";
+    setStatus("History reset. Add a spin or load a new history.");
+  }
+  function scores() {
+    const counts = Array(37).fill(0), recent = Array(37).fill(0), last = Array(37).fill(Infinity);
+    spins.forEach((n,i) => { counts[n]++; if (i < 10) recent[n]++; if (last[n] === Infinity) last[n] = i; });
+    return counts.map((c,n) => ({n,c,r:recent[n],s:c + 0.5*recent[n],last:last[n]}));
+  }
+  function analyze() {
+    const all = scores();
+    const ranked = [...all].sort((a,b) => b.s-a.s || a.last-b.last || a.n-b.n);
+    const hot = ranked.slice(0,5);
+    const sectors = W.map((center,i) => {
+      let total = 0;
+      for (let k=-2;k<=2;k++) total += all[W[(i+k+37)%37]].s;
+      return {i,center,total};
+    }).sort((a,b) => b.total-a.total || a.i-b.i);
+    const best = sectors[0];
+    const sector = [-2,-1,0,1,2].map(k => W[(best.i+k+37)%37]);
+    return {all,hot,best,sector};
+  }
+  function masterPicks(hot, sector, all) {
+    const hotNums = hot.map(x=>x.n), common = hotNums.filter(n=>sector.includes(n))
+      .sort((a,b)=>all[b].s-all[a].s || all[b].last-all[a].last);
+    const out = [...common];
+    let h=0, s=0, turn=0;
+    while(out.length<5 && (h<hotNums.length || s<sector.length)) {
+      const list = turn%2===0 ? hotNums : sector;
+      let idx = turn%2===0 ? h++ : s++;
+      if (idx < list.length && !out.includes(list[idx])) out.push(list[idx]);
+      turn++;
+      if (turn>30) break;
+    }
+    // If alternating candidates are exhausted, fill by overall momentum rank.
+    const ranked = [...all].sort((a,b)=>b.s-a.s || a.last-b.last || a.n-b.n);
+    for (const item of ranked) if(out.length<5 && !out.includes(item.n)) out.push(item.n);
+    return out;
+  }
+  function render() {
+    $("countTag").textContent = `${spins.length} / 50 STORED`;
+    $("undoBtn").disabled = undoStack.length===0;
+    $("memoryGrid").innerHTML = Array.from({length:50},(_,i) => {
+      const n = spins[i], label = i===0 ? "#1 (LATEST)" : i===49 ? "#50 (DROPS NEXT)" : `#${i+1}`;
+      return `<div class="slot ${i===0?"latest":""} ${i===49?"drop":""}"><div class="slotlabel">${label}</div>${n===undefined?'<div class="num" style="color:#586575">—</div>':ball(n,"tiny")}</div>`;
+    }).join("");
+    if (!spins.length) {
+      $("masterPicks").innerHTML='<span class="empty">Add spin history to calculate picks.</span>';
+      $("masterNote").textContent="No spins loaded yet.";
+      $("hotList").innerHTML='<div class="empty">Awaiting history.</div>';
+      $("sectorScore").textContent="—";
+      $("sectorList").innerHTML='<span class="empty">Awaiting history.</span>';
+      return;
+    }
+    const {all,hot,best,sector} = analyze();
+    const master = masterPicks(hot,sector,all);
+    $("masterPicks").innerHTML=master.map(n=>ball(n)).join("");
+    $("masterNote").textContent=`${spins.length} spin${spins.length===1?"":"s"} analyzed · ${master.filter(n=>hot.some(x=>x.n===n)&&sector.includes(n)).length} overlap pick(s).`;
+    $("hotList").innerHTML=hot.map((x,i)=>`<div class="rank"><div style="color:var(--muted);font-size:10px">#${i+1}</div>${ball(x.n,"small")}<strong>${x.s.toFixed(1)}</strong><small>50-spin: ${x.c}x<br>Last-10: ${x.r}x</small></div>`).join("");
+    $("sectorScore").textContent=`Sector score: ${best.total.toFixed(1)}`;
+    $("sectorList").innerHTML=sector.map((n,i)=>`<div class="wheelitem">${ball(n,"small")}<small>${i===2?'<span class="center-label">CENTER</span>':`Wheel ${i<2?"−"+(2-i):"+"+(i-2)}`}</small></div>`).join("");
+  }
+  // Build a correctly colored 0–36 European number pad.
+  for(let n=0;n<=36;n++){
+    const b=document.createElement("button");
+    b.textContent=n; b.className=color(n); b.type="button";
+    b.addEventListener("click",()=>addSpin(n));
+    $("numberPad").appendChild(b);
+  }
+  $("addSpin").addEventListener("click",()=> {
+    const raw=$("spinInput").value.trim();
+    if(raw==="") return setStatus("Enter a number first.");
+    const n=Number(raw); if(!/^\d+$/.test(raw) || !valid(n)) return setStatus("Only whole numbers from 0 to 36 are accepted.");
+    addSpin(n);
+  });
+  $("spinInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("addSpin").click();});
+  $("undoBtn").addEventListener("click",undo);
+  $("resetBtn").addEventListener("click",reset);
+  $("loadBulk").addEventListener("click",()=>{
+    const raw=$("bulkInput").value.trim();
+    if(!raw) return setBulkStatus("Paste at least one number.");
+    const tokens=raw.split(/[,\s]+/).filter(Boolean);
+    if(tokens.length>50) return setBulkStatus("Maximum 50 numbers allowed.");
+    if(tokens.some(t=>!/^\d+$/.test(t) || !valid(Number(t)))) return setBulkStatus("Invalid input. Use integers from 0 to 36 only.");
+    let list=tokens.map(Number);
+    if($("oldestFirst").checked) list.reverse(); // internal order is newest first
+    undoStack=[]; spins=list; save(); render();
+    setBulkStatus(`Loaded ${spins.length} number(s). ${$("oldestFirst").checked?"Oldest-first input was reversed":"Newest-first input kept as entered"}.`);
+    setStatus("History loaded successfully.");
+  });
+  $("copyHistory").addEventListener("click",async()=>{
+    const text=spins.join(", ");
+    try { await navigator.clipboard.writeText(text); setBulkStatus("Current history copied (newest first)."); }
+    catch(e) { $("bulkInput").value=text; setBulkStatus("Clipboard unavailable; history placed in the text area (newest first)."); }
+  });
+  loadSaved(); render();
+})();
+</script>
+</body>
+</html>
